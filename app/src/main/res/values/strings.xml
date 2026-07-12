@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kounta</string>
+    <string name="truco_title">Truco</string>
+    <string name="back">Volver</string>
+    <string name="team_nosotros">Nosotros</string>
+    <string name="team_ellos">Ellos</string>
+    <string name="decrease">Restar un punto</string>
+    <string name="increase">Sumar un punto</string>
+    <string name="reset_game">Nueva partida</string>
+    <string name="reset_confirm_title">¿Empezar de cero?</string>
+    <string name="reset_confirm_message">Se borrarán los puntajes guardados en este dispositivo.</string>
+    <string name="reset_confirm_ok">Sí, reiniciar</string>
+    <string name="reset_confirm_cancel">Cancelar</string>
+    <string name="save_pending">Guardando en 30 s…</string>
+    <string name="save_saved">Progreso guardado</string>
+    <string name="score_max">Máximo alcanzado (30)</string>
+</resources>
