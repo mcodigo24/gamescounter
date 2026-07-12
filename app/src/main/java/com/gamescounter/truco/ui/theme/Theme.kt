@@ -1,21 +1,21 @@
 package com.gamescounter.truco.ui.theme
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val KountaColorScheme = lightColorScheme(
+private val KountaColorScheme = darkColorScheme(
     primary = KountaPrimary,
-    onPrimary = Color.White,
+    onPrimary = ClayOnAccent,
     primaryContainer = KountaSurfaceVariant,
     onPrimaryContainer = KountaTextStrong,
     secondary = KountaSecondary,
-    onSecondary = KountaTextStrong,
-    secondaryContainer = Color(0xFFF0E4D6),
+    onSecondary = ClayOnAccent,
+    secondaryContainer = Color(0xFF3A2E22),
     onSecondaryContainer = KountaTextStrong,
     tertiary = KountaText,
-    onTertiary = KountaTextStrong,
+    onTertiary = ClayOnAccent,
     background = KountaBackground,
     onBackground = KountaTextStrong,
     surface = KountaSurface,
@@ -23,9 +23,9 @@ private val KountaColorScheme = lightColorScheme(
     surfaceVariant = KountaSurfaceVariant,
     onSurfaceVariant = KountaTextMuted,
     outline = KountaBorder,
-    outlineVariant = Color(0x1ACEAB93),
+    outlineVariant = Color(0x1AF0B27A),
     error = LostRed,
-    onError = Color.White,
+    onError = ClayOnAccent,
     errorContainer = LostRedContainer,
     onErrorContainer = LostRed,
 )

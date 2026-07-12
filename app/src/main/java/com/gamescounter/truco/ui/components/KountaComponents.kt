@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -21,13 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.gamescounter.truco.ui.theme.ClayOnAccent
 import com.gamescounter.truco.ui.theme.KountaBorder
 import com.gamescounter.truco.ui.theme.KountaPrimary
-import com.gamescounter.truco.ui.theme.KountaSecondary
 import com.gamescounter.truco.ui.theme.KountaSurface
-
-val KountaShape = RoundedCornerShape(16.dp)
-val KountaShapeSmall = RoundedCornerShape(12.dp)
 
 @Composable
 fun KountaCard(
@@ -37,26 +33,23 @@ fun KountaCard(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val colors = CardDefaults.cardColors(containerColor = containerColor)
-    val elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    val border = BorderStroke(1.dp, KountaBorder)
+    val clayModifier = modifier.fillMaxWidth().claymorphic(shape = KountaShape)
 
     if (onClick != null) {
         Card(
             onClick = onClick,
-            modifier = modifier.fillMaxWidth(),
+            modifier = clayModifier,
             shape = KountaShape,
             colors = colors,
-            elevation = elevation,
-            border = border,
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             content = content,
         )
     } else {
         Card(
-            modifier = modifier.fillMaxWidth(),
+            modifier = clayModifier,
             shape = KountaShape,
             colors = colors,
-            elevation = elevation,
-            border = border,
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             content = content,
         )
     }
@@ -72,16 +65,16 @@ fun KountaPrimaryButton(
     Button(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().claymorphic(shape = KountaShape, elevation = 6.dp),
         shape = KountaShape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = KountaSecondary,
-            contentColor = MaterialTheme.colorScheme.onSecondary,
-            disabledContainerColor = KountaSecondary.copy(alpha = 0.4f),
+            containerColor = KountaPrimary,
+            contentColor = ClayOnAccent,
+            disabledContainerColor = KountaPrimary.copy(alpha = 0.4f),
         ),
         elevation = ButtonDefaults.buttonElevation(
-            defaultElevation = 2.dp,
-            pressedElevation = 6.dp,
+            defaultElevation = 0.dp,
+            pressedElevation = 0.dp,
         ),
         contentPadding = PaddingValues(vertical = 14.dp),
     ) {
@@ -95,10 +88,10 @@ fun KountaSection(
     content: @Composable () -> Unit,
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier.claymorphic(shape = KountaShape),
         shape = KountaShape,
         color = KountaSurface,
-        shadowElevation = 1.dp,
+        shadowElevation = 0.dp,
         border = BorderStroke(1.dp, KountaBorder),
     ) {
         content()

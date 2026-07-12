@@ -2,6 +2,7 @@
 
 package com.gamescounter.truco.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -13,14 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +48,12 @@ import com.gamescounter.truco.R
 import com.gamescounter.truco.SaveStatus
 import com.gamescounter.truco.generala.GeneralaRow
 import com.gamescounter.truco.generala.GeneralaViewModel
+import com.gamescounter.truco.ui.components.KountaShapeSmall
+import com.gamescounter.truco.ui.components.claymorphic
 import com.gamescounter.truco.ui.theme.KountaBackground
+import com.gamescounter.truco.ui.theme.KountaBorder
+import com.gamescounter.truco.ui.theme.KountaSurface
+import com.gamescounter.truco.ui.theme.KountaSurfaceVariant
 import com.gamescounter.truco.generala.MAX_GENERALA_PLAYERS
 import com.gamescounter.truco.generala.MIN_GENERALA_PLAYERS
 
@@ -139,6 +144,7 @@ fun GeneralaScreen(
                         Icon(imageVector = Icons.Default.Refresh, contentDescription = stringResource(R.string.reset_game))
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = KountaBackground),
             )
         },
     ) { padding ->
@@ -230,7 +236,7 @@ private fun HeaderRow(
                 onValueChange = { onInitialChange(index, it) },
                 singleLine = true,
                 modifier = cellModifier(fitsWithoutScroll, minCellWidth),
-                shape = RoundedCornerShape(12.dp),
+                shape = KountaShapeSmall,
                 textStyle = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Center),
             )
         }
@@ -253,13 +259,18 @@ private fun ScoreRow(
     ) {
         CellLabel(text = label, modifier = Modifier.width(labelWidth))
         values.forEachIndexed { playerIndex, value ->
-            ElevatedCard(
+            Surface(
                 onClick = { onCellTap(playerIndex) },
-                modifier = cellModifier(fitsWithoutScroll, minCellWidth),
+                shape = KountaShapeSmall,
+                color = KountaSurface,
+                border = BorderStroke(1.dp, KountaBorder),
+                modifier = cellModifier(fitsWithoutScroll, minCellWidth)
+                    .claymorphic(shape = KountaShapeSmall, elevation = 5.dp),
             ) {
                 Text(
                     text = formatCell(value),
                     textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 12.dp),
@@ -286,13 +297,16 @@ private fun TotalRow(
         CellLabel(text = "Total", modifier = Modifier.width(labelWidth))
         totals.forEach { total ->
             Surface(
-                tonalElevation = 4.dp,
-                shape = RoundedCornerShape(12.dp),
-                modifier = cellModifier(fitsWithoutScroll, minCellWidth),
+                shape = KountaShapeSmall,
+                color = KountaSurfaceVariant,
+                border = BorderStroke(1.dp, KountaBorder),
+                modifier = cellModifier(fitsWithoutScroll, minCellWidth)
+                    .claymorphic(shape = KountaShapeSmall, elevation = 6.dp),
             ) {
                 Text(
                     text = total.toString(),
                     textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 12.dp),
@@ -307,13 +321,15 @@ private fun TotalRow(
 @Composable
 private fun CellLabel(text: String, modifier: Modifier = Modifier.width(72.dp)) {
     Surface(
-        tonalElevation = 2.dp,
-        shape = RoundedCornerShape(12.dp),
-        modifier = modifier,
+        shape = KountaShapeSmall,
+        color = KountaSurfaceVariant,
+        border = BorderStroke(1.dp, KountaBorder),
+        modifier = modifier.claymorphic(shape = KountaShapeSmall, elevation = 4.dp),
     ) {
         Text(
             text = text,
             textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 12.dp),
