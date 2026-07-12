@@ -3,6 +3,8 @@
 package com.gamescounter.truco.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -15,6 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
@@ -87,8 +92,17 @@ fun GeneralaScreen(
         )
     }
 
+    val focusManager = LocalFocusManager.current
+
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown(pass = PointerEventPass.Initial)
+                    focusManager.clearFocus()
+                }
+            },
         containerColor = KountaBackground,
         topBar = {
             TopAppBar(
