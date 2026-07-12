@@ -50,6 +50,31 @@ data class ChinChonScore(
     fun isPlayerLost(playerIndex: Int): Boolean =
         totalForPlayer(playerIndex) >= CHINCHON_LOSE_THRESHOLD
 
+    fun addPlayer(): ChinChonScore {
+        if (playerInitials.size >= MAX_CHINCHON_PLAYERS) return this
+
+        val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        val newInitial = alphabet.map { it.toString() }
+            .firstOrNull { it !in playerInitials }
+            ?: alphabet[playerInitials.size % alphabet.length].toString()
+
+        val maxTotal = playerInitials.indices.maxOfOrNull { totalForPlayer(it) } ?: 0
+
+        val newRounds = if (rounds.isEmpty()) {
+            listOf(listOf(maxTotal))
+        } else {
+            rounds.mapIndexed { index, row ->
+                row + if (index == rounds.lastIndex) maxTotal else 0
+            }
+        }
+
+        return copy(
+            playerInitials = playerInitials + newInitial,
+            rounds = newRounds,
+            segmentStartRound = segmentStartRound + 0,
+        ).ensureTrailingEmptyRound()
+    }
+
     fun firstBustRound(playerIndex: Int): Int? {
         if (playerIndex !in playerInitials.indices) return null
         val start = segmentStartRound.getOrElse(playerIndex) { 0 }

@@ -15,8 +15,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -111,6 +115,18 @@ fun ChinChonScreen(
                 saveStatus = uiState.saveStatus,
                 onBack = onBack,
                 onReset = { showResetDialog = true },
+                actions = {
+                    IconButton(
+                        onClick = viewModel::addPlayer,
+                        enabled = score.playerInitials.size < MAX_CHINCHON_PLAYERS,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Agregar jugador",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
+                },
             )
         },
     ) { padding ->

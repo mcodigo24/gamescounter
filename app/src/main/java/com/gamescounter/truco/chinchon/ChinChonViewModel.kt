@@ -104,6 +104,10 @@ class ChinChonViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun addPlayer() {
+        updateScore { score -> score.addPlayer() }
+    }
+
     fun resetGame() {
         autoSaveJob?.cancel()
         hasUnsavedChanges = false
