@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,8 +45,8 @@ import com.gamescounter.truco.diezmil.MIN_DIEZMIL_PLAYERS
 import com.gamescounter.truco.ui.components.GameTopBar
 import com.gamescounter.truco.ui.components.GridLabel
 import com.gamescounter.truco.ui.components.GridTotalCell
-import com.gamescounter.truco.ui.components.KountaShapeSmall
 import com.gamescounter.truco.ui.components.PlayerCountActions
+import com.gamescounter.truco.ui.components.PlayerInitialField
 import com.gamescounter.truco.ui.components.PlayerSetupScreen
 import com.gamescounter.truco.ui.components.KountaHint
 import com.gamescounter.truco.ui.components.UnsignedScoreField
@@ -180,13 +179,11 @@ fun DiezMilScreen(
                             append(initial)
                             placement?.let { append(" #$it") }
                         }
-                        OutlinedTextField(
+                        PlayerInitialField(
                             value = if (placement != null) label else initial,
                             onValueChange = { viewModel.updateInitial(index, it) },
-                            singleLine = true,
                             readOnly = placement != null,
                             modifier = cellModifier(fitsWithoutScroll, minCellWidth),
-                            shape = KountaShapeSmall,
                             textStyle = MaterialTheme.typography.titleMedium.copy(
                                 textAlign = TextAlign.Center,
                                 color = if (active) WinGreen else MaterialTheme.colorScheme.onSurface,

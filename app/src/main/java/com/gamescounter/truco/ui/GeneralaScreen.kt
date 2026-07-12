@@ -29,7 +29,6 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,6 +53,7 @@ import com.gamescounter.truco.SaveStatus
 import com.gamescounter.truco.generala.GeneralaRow
 import com.gamescounter.truco.generala.GeneralaViewModel
 import com.gamescounter.truco.ui.components.KountaShapeSmall
+import com.gamescounter.truco.ui.components.PlayerInitialField
 import com.gamescounter.truco.ui.components.claymorphic
 import com.gamescounter.truco.ui.theme.KountaBackground
 import com.gamescounter.truco.ui.theme.KountaBorder
@@ -245,12 +245,10 @@ private fun HeaderRow(
     ) {
         CellLabel(text = "#", modifier = Modifier.width(labelWidth))
         initials.forEachIndexed { index, initial ->
-            OutlinedTextField(
+            PlayerInitialField(
                 value = initial,
                 onValueChange = { onInitialChange(index, it) },
-                singleLine = true,
                 modifier = cellModifier(fitsWithoutScroll, minCellWidth),
-                shape = KountaShapeSmall,
                 textStyle = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Center),
             )
         }

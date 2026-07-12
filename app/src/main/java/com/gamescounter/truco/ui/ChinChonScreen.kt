@@ -26,7 +26,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,7 +48,7 @@ import com.gamescounter.truco.chinchon.MIN_CHINCHON_PLAYERS
 import com.gamescounter.truco.ui.components.GameTopBar
 import com.gamescounter.truco.ui.components.GridLabel
 import com.gamescounter.truco.ui.components.GridTotalCell
-import com.gamescounter.truco.ui.components.KountaShapeSmall
+import com.gamescounter.truco.ui.components.PlayerInitialField
 import com.gamescounter.truco.ui.components.PlayerSetupScreen
 import com.gamescounter.truco.ui.components.SignedScoreField
 import com.gamescounter.truco.ui.components.formatSignedInput
@@ -170,12 +169,10 @@ fun ChinChonScreen(
                     GridLabel(text = "Ronda", modifier = Modifier.width(labelWidth))
                     score.playerInitials.forEachIndexed { index, initial ->
                         val lost = score.isPlayerLost(index)
-                        OutlinedTextField(
+                        PlayerInitialField(
                             value = initial,
                             onValueChange = { viewModel.updateInitial(index, it) },
-                            singleLine = true,
                             modifier = cellModifier(fitsWithoutScroll, minCellWidth),
-                            shape = KountaShapeSmall,
                             textStyle = MaterialTheme.typography.titleMedium.copy(
                                 textAlign = TextAlign.Center,
                                 color = if (lost) LostRed else MaterialTheme.colorScheme.onSurface,
