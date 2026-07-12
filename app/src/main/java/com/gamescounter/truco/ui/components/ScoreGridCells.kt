@@ -155,7 +155,9 @@ fun UnsignedScoreField(
     containerColor: Color = KountaSurface,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     isError: Boolean = false,
+    onFocusLost: (() -> Unit)? = null,
 ) {
+    var wasFocused by remember { mutableStateOf(false) }
     OutlinedTextField(
         value = value,
         onValueChange = { input ->
@@ -165,7 +167,12 @@ fun UnsignedScoreField(
         },
         singleLine = true,
         isError = isError,
-        modifier = modifier,
+        modifier = modifier.onFocusChanged { focusState ->
+            if (wasFocused && !focusState.isFocused) {
+                onFocusLost?.invoke()
+            }
+            wasFocused = focusState.isFocused
+        },
         shape = KountaShapeSmall,
         textStyle = MaterialTheme.typography.titleMedium.copy(
             textAlign = TextAlign.Center,

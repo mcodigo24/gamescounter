@@ -180,6 +180,11 @@ fun DiezMilScreen(
                             onValueChange = { viewModel.updateCell(roundIndex, playerIndex, it) },
                             containerColor = colors.first,
                             contentColor = colors.second,
+                            onFocusLost = if (roundIndex == 0) {
+                                { viewModel.commitFirstRoundCell(playerIndex) }
+                            } else {
+                                null
+                            },
                         )
                     }
                 }

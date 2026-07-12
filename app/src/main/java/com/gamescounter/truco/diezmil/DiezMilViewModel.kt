@@ -92,13 +92,6 @@ class DiezMilViewModel(application: Application) : AndroidViewModel(application)
             return
         }
 
-        if (roundIndex == 0 && parsed < DIEZMIL_ENTRY_THRESHOLD) {
-            _uiState.update {
-                it.copy(cellError = "La primera casilla debe ser de $DIEZMIL_ENTRY_THRESHOLD o mas")
-            }
-            return
-        }
-
         val current = _uiState.value.score
         if (current.wouldExceedTarget(playerIndex, roundIndex, parsed)) {
             _uiState.update { it.copy(cellError = "Te pasaste de 10000 puntos") }
@@ -128,6 +121,23 @@ class DiezMilViewModel(application: Application) : AndroidViewModel(application)
         }
 
         _uiState.update { it.copy(cellError = null) }
+    }
+
+    fun commitFirstRoundCell(playerIndex: Int) {
+        val roundIndex = 0
+        val value = _uiState.value.score.rounds.getOrNull(roundIndex)?.getOrNull(playerIndex)
+        if (value == null || value >= DIEZMIL_ENTRY_THRESHOLD) return
+
+        updateScore { score ->
+            val rounds = score.rounds.toMutableList()
+            val row = rounds[roundIndex].toMutableList()
+            row[playerIndex] = 0
+            rounds[roundIndex] = row
+            score.copy(rounds = rounds)
+        }
+        _uiState.update {
+            it.copy(cellError = "No has llegado a 750, intenta de nuevo en la próxima ronda")
+        }
     }
 
     private fun clearCell(roundIndex: Int, playerIndex: Int) {
