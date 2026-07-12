@@ -2,6 +2,8 @@
 
 package com.gamescounter.truco.ui
 
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -14,6 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
@@ -21,7 +26,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,7 +48,7 @@ import com.gamescounter.truco.chinchon.MIN_CHINCHON_PLAYERS
 import com.gamescounter.truco.ui.components.GameTopBar
 import com.gamescounter.truco.ui.components.GridLabel
 import com.gamescounter.truco.ui.components.GridTotalCell
-import com.gamescounter.truco.ui.components.KountaShapeSmall
+import com.gamescounter.truco.ui.components.PlayerInitialField
 import com.gamescounter.truco.ui.components.PlayerSetupScreen
 import com.gamescounter.truco.ui.components.SignedScoreField
 import com.gamescounter.truco.ui.components.formatSignedInput
@@ -106,8 +110,17 @@ fun ChinChonScreen(
     val minCellWidth = 104.dp
     val spacing = 8.dp
 
+    val focusManager = LocalFocusManager.current
+
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown(pass = PointerEventPass.Initial)
+                    focusManager.clearFocus()
+                }
+            },
         containerColor = KountaBackground,
         topBar = {
             GameTopBar(
@@ -156,12 +169,10 @@ fun ChinChonScreen(
                     GridLabel(text = "Ronda", modifier = Modifier.width(labelWidth))
                     score.playerInitials.forEachIndexed { index, initial ->
                         val lost = score.isPlayerLost(index)
-                        OutlinedTextField(
+                        PlayerInitialField(
                             value = initial,
                             onValueChange = { viewModel.updateInitial(index, it) },
-                            singleLine = true,
                             modifier = cellModifier(fitsWithoutScroll, minCellWidth),
-                            shape = KountaShapeSmall,
                             textStyle = MaterialTheme.typography.titleMedium.copy(
                                 textAlign = TextAlign.Center,
                                 color = if (lost) LostRed else MaterialTheme.colorScheme.onSurface,

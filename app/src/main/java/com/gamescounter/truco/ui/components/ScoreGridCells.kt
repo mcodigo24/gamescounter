@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -83,6 +84,40 @@ fun GridTotalCell(
             fontWeight = FontWeight.Bold,
         )
     }
+}
+
+@Composable
+fun PlayerInitialField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    readOnly: Boolean = false,
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Center),
+) {
+    // Tapping an existing initial clears it immediately so typing replaces it
+    // outright, instead of requiring the user to delete the old letter first.
+    var isFocused by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf(value) }
+    LaunchedEffect(value, isFocused) {
+        if (!isFocused) text = value
+    }
+    OutlinedTextField(
+        value = if (readOnly) value else text,
+        onValueChange = { input ->
+            text = input
+            onValueChange(input)
+        },
+        singleLine = true,
+        readOnly = readOnly,
+        modifier = modifier.onFocusChanged { focusState ->
+            if (!readOnly && focusState.isFocused && !isFocused) {
+                text = ""
+            }
+            isFocused = focusState.isFocused
+        },
+        shape = KountaShapeSmall,
+        textStyle = textStyle,
+    )
 }
 
 @Composable

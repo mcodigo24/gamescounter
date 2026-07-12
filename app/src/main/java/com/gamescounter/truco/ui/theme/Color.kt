@@ -5,14 +5,14 @@ import androidx.compose.ui.graphics.Color
 // Paleta Kounta — Claymorfismo oscuro, cálido (ámbar/durazno)
 val KountaPrimary = Color(0xFFF0B27A)
 val KountaSecondary = Color(0xFFE8A56C)
-val KountaBackground = Color(0xFF2E2620)
+val KountaBackground = Color(0xFF3D3128)
 val KountaText = Color(0xFFF5E6D8)
 
 // Derivados para legibilidad y estados (armonía con la paleta)
 val KountaTextStrong = Color(0xFFFBF3EA)
 val KountaTextMuted = Color(0xFFB8A493)
-val KountaSurface = Color(0xFF362D26)
-val KountaSurfaceVariant = Color(0xFF3F332A)
+val KountaSurface = Color(0xFF45382E)
+val KountaSurfaceVariant = Color(0xFF4E3E32)
 val KountaBorder = Color(0x33F0B27A)
 val KountaBorderFocus = Color(0x99F0B27A)
 

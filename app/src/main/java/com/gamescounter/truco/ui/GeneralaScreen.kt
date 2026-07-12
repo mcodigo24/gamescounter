@@ -3,6 +3,8 @@
 package com.gamescounter.truco.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -15,6 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
@@ -24,7 +29,6 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,6 +53,7 @@ import com.gamescounter.truco.SaveStatus
 import com.gamescounter.truco.generala.GeneralaRow
 import com.gamescounter.truco.generala.GeneralaViewModel
 import com.gamescounter.truco.ui.components.KountaShapeSmall
+import com.gamescounter.truco.ui.components.PlayerInitialField
 import com.gamescounter.truco.ui.components.claymorphic
 import com.gamescounter.truco.ui.theme.KountaBackground
 import com.gamescounter.truco.ui.theme.KountaBorder
@@ -87,8 +92,17 @@ fun GeneralaScreen(
         )
     }
 
+    val focusManager = LocalFocusManager.current
+
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown(pass = PointerEventPass.Initial)
+                    focusManager.clearFocus()
+                }
+            },
         containerColor = KountaBackground,
         topBar = {
             TopAppBar(
@@ -231,12 +245,10 @@ private fun HeaderRow(
     ) {
         CellLabel(text = "#", modifier = Modifier.width(labelWidth))
         initials.forEachIndexed { index, initial ->
-            OutlinedTextField(
+            PlayerInitialField(
                 value = initial,
                 onValueChange = { onInitialChange(index, it) },
-                singleLine = true,
                 modifier = cellModifier(fitsWithoutScroll, minCellWidth),
-                shape = KountaShapeSmall,
                 textStyle = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Center),
             )
         }

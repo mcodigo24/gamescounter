@@ -2,6 +2,8 @@
 
 package com.gamescounter.truco.ui
 
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -14,10 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,8 +45,8 @@ import com.gamescounter.truco.diezmil.MIN_DIEZMIL_PLAYERS
 import com.gamescounter.truco.ui.components.GameTopBar
 import com.gamescounter.truco.ui.components.GridLabel
 import com.gamescounter.truco.ui.components.GridTotalCell
-import com.gamescounter.truco.ui.components.KountaShapeSmall
 import com.gamescounter.truco.ui.components.PlayerCountActions
+import com.gamescounter.truco.ui.components.PlayerInitialField
 import com.gamescounter.truco.ui.components.PlayerSetupScreen
 import com.gamescounter.truco.ui.components.KountaHint
 import com.gamescounter.truco.ui.components.UnsignedScoreField
@@ -104,8 +108,17 @@ fun DiezMilScreen(
     val minCellWidth = 104.dp
     val spacing = 8.dp
 
+    val focusManager = LocalFocusManager.current
+
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown(pass = PointerEventPass.Initial)
+                    focusManager.clearFocus()
+                }
+            },
         containerColor = KountaBackground,
         topBar = {
             GameTopBar(
@@ -166,13 +179,11 @@ fun DiezMilScreen(
                             append(initial)
                             placement?.let { append(" #$it") }
                         }
-                        OutlinedTextField(
+                        PlayerInitialField(
                             value = if (placement != null) label else initial,
                             onValueChange = { viewModel.updateInitial(index, it) },
-                            singleLine = true,
                             readOnly = placement != null,
                             modifier = cellModifier(fitsWithoutScroll, minCellWidth),
-                            shape = KountaShapeSmall,
                             textStyle = MaterialTheme.typography.titleMedium.copy(
                                 textAlign = TextAlign.Center,
                                 color = if (active) WinGreen else MaterialTheme.colorScheme.onSurface,
