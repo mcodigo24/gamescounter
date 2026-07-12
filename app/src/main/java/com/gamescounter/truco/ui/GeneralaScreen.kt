@@ -4,8 +4,10 @@ package com.gamescounter.truco.ui
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.res.stringResource
@@ -144,36 +147,64 @@ fun GeneralaScreen(
         val horizontal = rememberScrollState()
         val vertical = rememberScrollState()
 
-        Column(
+        val labelWidth = 72.dp
+        val minCellWidth = 64.dp
+        val spacing = 8.dp
+
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .verticalScroll(vertical)
-                .horizontalScroll(horizontal)
                 .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            HeaderRow(
-                initials = uiState.score.playerInitials,
-                onInitialChange = viewModel::updateInitial,
-            )
+            val playerCount = uiState.score.playerInitials.size.coerceAtLeast(1)
+            val requiredWidth = labelWidth + spacing +
+                minCellWidth * playerCount + spacing * (playerCount - 1).coerceAtLeast(0)
+            val fitsWithoutScroll = requiredWidth <= maxWidth
 
-            GeneralaRow.entries.forEachIndexed { rowIndex, row ->
-                ScoreRow(
-                    label = row.label,
-                    values = uiState.score.board.map { it[rowIndex] },
-                    onCellTap = { playerIndex -> viewModel.cycleCell(playerIndex, rowIndex) },
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(vertical)
+                    .let { if (fitsWithoutScroll) it else it.horizontalScroll(horizontal) },
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                HeaderRow(
+                    initials = uiState.score.playerInitials,
+                    onInitialChange = viewModel::updateInitial,
+                    fitsWithoutScroll = fitsWithoutScroll,
+                    labelWidth = labelWidth,
+                    minCellWidth = minCellWidth,
+                    spacing = spacing,
                 )
-            }
 
-            TotalRow(totals = uiState.score.board.indices.map { uiState.score.totalForPlayer(it) })
+                GeneralaRow.entries.forEachIndexed { rowIndex, row ->
+                    ScoreRow(
+                        label = row.label,
+                        values = uiState.score.board.map { it[rowIndex] },
+                        onCellTap = { playerIndex -> viewModel.cycleCell(playerIndex, rowIndex) },
+                        fitsWithoutScroll = fitsWithoutScroll,
+                        labelWidth = labelWidth,
+                        minCellWidth = minCellWidth,
+                        spacing = spacing,
+                    )
+                }
 
-            if (uiState.score.playerInitials.size <= MIN_GENERALA_PLAYERS) {
-                Text(
-                    text = "Minimo de jugadores alcanzado",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                TotalRow(
+                    totals = uiState.score.board.indices.map { uiState.score.totalForPlayer(it) },
+                    fitsWithoutScroll = fitsWithoutScroll,
+                    labelWidth = labelWidth,
+                    minCellWidth = minCellWidth,
+                    spacing = spacing,
                 )
+
+                if (uiState.score.playerInitials.size <= MIN_GENERALA_PLAYERS) {
+                    Text(
+                        text = "Minimo de jugadores alcanzado",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         }
     }
@@ -183,15 +214,22 @@ fun GeneralaScreen(
 private fun HeaderRow(
     initials: List<String>,
     onInitialChange: (Int, String) -> Unit,
+    fitsWithoutScroll: Boolean,
+    labelWidth: Dp,
+    minCellWidth: Dp,
+    spacing: Dp,
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        CellLabel(text = "#")
+    Row(
+        modifier = if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier,
+        horizontalArrangement = Arrangement.spacedBy(spacing),
+    ) {
+        CellLabel(text = "#", modifier = Modifier.width(labelWidth))
         initials.forEachIndexed { index, initial ->
             OutlinedTextField(
                 value = initial,
                 onValueChange = { onInitialChange(index, it) },
                 singleLine = true,
-                modifier = Modifier.width(64.dp),
+                modifier = cellModifier(fitsWithoutScroll, minCellWidth),
                 shape = RoundedCornerShape(12.dp),
                 textStyle = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Center),
             )
@@ -204,13 +242,20 @@ private fun ScoreRow(
     label: String,
     values: List<Int?>,
     onCellTap: (Int) -> Unit,
+    fitsWithoutScroll: Boolean,
+    labelWidth: Dp,
+    minCellWidth: Dp,
+    spacing: Dp,
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        CellLabel(text = label)
+    Row(
+        modifier = if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier,
+        horizontalArrangement = Arrangement.spacedBy(spacing),
+    ) {
+        CellLabel(text = label, modifier = Modifier.width(labelWidth))
         values.forEachIndexed { playerIndex, value ->
             ElevatedCard(
                 onClick = { onCellTap(playerIndex) },
-                modifier = Modifier.width(64.dp),
+                modifier = cellModifier(fitsWithoutScroll, minCellWidth),
             ) {
                 Text(
                     text = formatCell(value),
@@ -227,14 +272,23 @@ private fun ScoreRow(
 }
 
 @Composable
-private fun TotalRow(totals: List<Int>) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        CellLabel(text = "Total")
+private fun TotalRow(
+    totals: List<Int>,
+    fitsWithoutScroll: Boolean,
+    labelWidth: Dp,
+    minCellWidth: Dp,
+    spacing: Dp,
+) {
+    Row(
+        modifier = if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier,
+        horizontalArrangement = Arrangement.spacedBy(spacing),
+    ) {
+        CellLabel(text = "Total", modifier = Modifier.width(labelWidth))
         totals.forEach { total ->
             Surface(
                 tonalElevation = 4.dp,
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.width(64.dp),
+                modifier = cellModifier(fitsWithoutScroll, minCellWidth),
             ) {
                 Text(
                     text = total.toString(),
@@ -251,11 +305,11 @@ private fun TotalRow(totals: List<Int>) {
 }
 
 @Composable
-private fun CellLabel(text: String) {
+private fun CellLabel(text: String, modifier: Modifier = Modifier.width(72.dp)) {
     Surface(
         tonalElevation = 2.dp,
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.width(72.dp),
+        modifier = modifier,
     ) {
         Text(
             text = text,
@@ -268,6 +322,9 @@ private fun CellLabel(text: String) {
         )
     }
 }
+
+private fun RowScope.cellModifier(fitsWithoutScroll: Boolean, minCellWidth: Dp): Modifier =
+    if (fitsWithoutScroll) Modifier.weight(1f) else Modifier.width(minCellWidth)
 
 private fun formatCell(value: Int?): String = when (value) {
     null -> "-"
