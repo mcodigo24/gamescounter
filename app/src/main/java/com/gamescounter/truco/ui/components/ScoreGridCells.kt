@@ -1,10 +1,13 @@
 package com.gamescounter.truco.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -18,9 +21,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -92,7 +98,12 @@ fun PlayerInitialField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     readOnly: Boolean = false,
-    textStyle: TextStyle = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Center),
+    containerColor: Color = KountaSurface,
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium.copy(
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.SemiBold,
+    ),
 ) {
     // Tapping an existing initial clears it immediately so typing replaces it
     // outright, instead of requiring the user to delete the old letter first.
@@ -101,23 +112,44 @@ fun PlayerInitialField(
     LaunchedEffect(value, isFocused) {
         if (!isFocused) text = value
     }
-    OutlinedTextField(
-        value = if (readOnly) value else text,
-        onValueChange = { input ->
-            text = input
-            onValueChange(input)
-        },
-        singleLine = true,
-        readOnly = readOnly,
-        modifier = modifier.onFocusChanged { focusState ->
-            if (!readOnly && focusState.isFocused && !isFocused) {
-                text = ""
-            }
-            isFocused = focusState.isFocused
-        },
+    // Built on BasicTextField (instead of OutlinedTextField) so the cell matches the
+    // exact shape/padding of the other grid cells (GridLabel, score/total cells) and
+    // lines up with them at the same row height.
+    Surface(
         shape = KountaShapeSmall,
-        textStyle = textStyle,
-    )
+        color = containerColor,
+        border = BorderStroke(1.dp, if (isFocused) KountaBorderFocus else KountaBorder),
+        modifier = modifier.claymorphic(shape = KountaShapeSmall, elevation = 5.dp),
+    ) {
+        BasicTextField(
+            value = if (readOnly) value else text,
+            onValueChange = { input ->
+                text = input
+                onValueChange(input)
+            },
+            singleLine = true,
+            readOnly = readOnly,
+            // Respect an explicit color on the caller's textStyle (e.g. lost/won
+            // highlighting); only fall back to contentColor when none was set.
+            textStyle = textStyle.copy(
+                color = if (textStyle.color.isSpecified) textStyle.color else contentColor,
+            ),
+            cursorBrush = SolidColor(KountaPrimary),
+            modifier = Modifier
+                .fillMaxSize()
+                .onFocusChanged { focusState ->
+                    if (!readOnly && focusState.isFocused && !isFocused) {
+                        text = ""
+                    }
+                    isFocused = focusState.isFocused
+                },
+            decorationBox = { innerTextField ->
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    innerTextField()
+                }
+            },
+        )
+    }
 }
 
 @Composable

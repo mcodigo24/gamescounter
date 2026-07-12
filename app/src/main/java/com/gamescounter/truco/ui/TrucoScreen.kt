@@ -55,6 +55,7 @@ import com.gamescounter.truco.SaveStatus
 import com.gamescounter.truco.TrucoViewModel
 import com.gamescounter.truco.data.MAX_SCORE
 import com.gamescounter.truco.data.MIN_SCORE
+import com.gamescounter.truco.ui.components.kountaScreenInsets
 import com.gamescounter.truco.ui.theme.KountaBackground
 import com.gamescounter.truco.ui.theme.KountaBorder
 import com.gamescounter.truco.ui.theme.KountaPrimary
@@ -96,6 +97,7 @@ fun TrucoScreen(
     Scaffold(
         modifier = modifier,
         containerColor = KountaBackground,
+        contentWindowInsets = kountaScreenInsets(),
         topBar = {
             TopBar(
                 saveStatus = uiState.saveStatus,

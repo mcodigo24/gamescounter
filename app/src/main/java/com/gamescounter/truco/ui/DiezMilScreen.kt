@@ -51,6 +51,7 @@ import com.gamescounter.truco.ui.components.PlayerSetupScreen
 import com.gamescounter.truco.ui.components.KountaHint
 import com.gamescounter.truco.ui.components.UnsignedScoreField
 import com.gamescounter.truco.ui.components.formatUnsignedInput
+import com.gamescounter.truco.ui.components.kountaScreenInsets
 import com.gamescounter.truco.ui.theme.KountaBackground
 import com.gamescounter.truco.ui.theme.WinGreen
 import com.gamescounter.truco.ui.theme.WinGreenContainer
@@ -120,6 +121,7 @@ fun DiezMilScreen(
                 }
             },
         containerColor = KountaBackground,
+        contentWindowInsets = kountaScreenInsets(),
         topBar = {
             GameTopBar(
                 title = "10Mil",

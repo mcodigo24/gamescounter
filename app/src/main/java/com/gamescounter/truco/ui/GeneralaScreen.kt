@@ -7,16 +7,17 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
@@ -28,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -36,6 +38,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +58,7 @@ import com.gamescounter.truco.generala.GeneralaViewModel
 import com.gamescounter.truco.ui.components.KountaShapeSmall
 import com.gamescounter.truco.ui.components.PlayerInitialField
 import com.gamescounter.truco.ui.components.claymorphic
+import com.gamescounter.truco.ui.components.kountaScreenInsets
 import com.gamescounter.truco.ui.theme.KountaBackground
 import com.gamescounter.truco.ui.theme.KountaBorder
 import com.gamescounter.truco.ui.theme.KountaSurface
@@ -104,6 +108,7 @@ fun GeneralaScreen(
                 }
             },
         containerColor = KountaBackground,
+        contentWindowInsets = kountaScreenInsets(),
         topBar = {
             TopAppBar(
                 title = {
@@ -165,17 +170,16 @@ fun GeneralaScreen(
         if (uiState.isLoading) return@Scaffold
 
         val horizontal = rememberScrollState()
-        val vertical = rememberScrollState()
 
-        val labelWidth = 72.dp
-        val minCellWidth = 64.dp
-        val spacing = 8.dp
+        val labelWidth = 60.dp
+        val minCellWidth = 60.dp
+        val spacing = 6.dp
 
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(12.dp),
+                .padding(horizontal = 10.dp, vertical = 6.dp),
         ) {
             val playerCount = uiState.score.playerInitials.size.coerceAtLeast(1)
             val requiredWidth = labelWidth + spacing +
@@ -185,9 +189,8 @@ fun GeneralaScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(vertical)
                     .let { if (fitsWithoutScroll) it else it.horizontalScroll(horizontal) },
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 HeaderRow(
                     initials = uiState.score.playerInitials,
@@ -196,6 +199,7 @@ fun GeneralaScreen(
                     labelWidth = labelWidth,
                     minCellWidth = minCellWidth,
                     spacing = spacing,
+                    modifier = Modifier.weight(1f),
                 )
 
                 GeneralaRow.entries.forEachIndexed { rowIndex, row ->
@@ -207,6 +211,7 @@ fun GeneralaScreen(
                         labelWidth = labelWidth,
                         minCellWidth = minCellWidth,
                         spacing = spacing,
+                        modifier = Modifier.weight(1f),
                     )
                 }
 
@@ -216,6 +221,7 @@ fun GeneralaScreen(
                     labelWidth = labelWidth,
                     minCellWidth = minCellWidth,
                     spacing = spacing,
+                    modifier = Modifier.weight(1f),
                 )
 
                 if (uiState.score.playerInitials.size <= MIN_GENERALA_PLAYERS) {
@@ -238,9 +244,12 @@ private fun HeaderRow(
     labelWidth: Dp,
     minCellWidth: Dp,
     spacing: Dp,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier,
+        modifier = modifier
+            .fillMaxHeight()
+            .let { if (fitsWithoutScroll) it.fillMaxWidth() else it },
         horizontalArrangement = Arrangement.spacedBy(spacing),
     ) {
         CellLabel(text = "#", modifier = Modifier.width(labelWidth))
@@ -264,31 +273,37 @@ private fun ScoreRow(
     labelWidth: Dp,
     minCellWidth: Dp,
     spacing: Dp,
+    modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier,
-        horizontalArrangement = Arrangement.spacedBy(spacing),
-    ) {
-        CellLabel(text = label, modifier = Modifier.width(labelWidth))
-        values.forEachIndexed { playerIndex, value ->
-            Surface(
-                onClick = { onCellTap(playerIndex) },
-                shape = KountaShapeSmall,
-                color = KountaSurface,
-                border = BorderStroke(1.dp, KountaBorder),
-                modifier = cellModifier(fitsWithoutScroll, minCellWidth)
-                    .claymorphic(shape = KountaShapeSmall, elevation = 5.dp),
-            ) {
-                Text(
-                    text = formatCell(value),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
+    // Clickable Surfaces otherwise enforce a minimum touch target, which makes
+    // them taller than the non-clickable label/total cells in the same row.
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+        Row(
+            modifier = modifier
+                .fillMaxHeight()
+                .let { if (fitsWithoutScroll) it.fillMaxWidth() else it },
+            horizontalArrangement = Arrangement.spacedBy(spacing),
+        ) {
+            CellLabel(text = label, modifier = Modifier.width(labelWidth))
+            values.forEachIndexed { playerIndex, value ->
+                Surface(
+                    onClick = { onCellTap(playerIndex) },
+                    shape = KountaShapeSmall,
+                    color = KountaSurface,
+                    border = BorderStroke(1.dp, KountaBorder),
+                    modifier = cellModifier(fitsWithoutScroll, minCellWidth)
+                        .claymorphic(shape = KountaShapeSmall, elevation = 5.dp),
+                ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = formatCell(value),
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
             }
         }
     }
@@ -301,9 +316,12 @@ private fun TotalRow(
     labelWidth: Dp,
     minCellWidth: Dp,
     spacing: Dp,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier,
+        modifier = modifier
+            .fillMaxHeight()
+            .let { if (fitsWithoutScroll) it.fillMaxWidth() else it },
         horizontalArrangement = Arrangement.spacedBy(spacing),
     ) {
         CellLabel(text = "Total", modifier = Modifier.width(labelWidth))
@@ -315,16 +333,15 @@ private fun TotalRow(
                 modifier = cellModifier(fitsWithoutScroll, minCellWidth)
                     .claymorphic(shape = KountaShapeSmall, elevation = 6.dp),
             ) {
-                Text(
-                    text = total.toString(),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = total.toString(),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             }
         }
     }
@@ -336,23 +353,24 @@ private fun CellLabel(text: String, modifier: Modifier = Modifier.width(72.dp)) 
         shape = KountaShapeSmall,
         color = KountaSurfaceVariant,
         border = BorderStroke(1.dp, KountaBorder),
-        modifier = modifier.claymorphic(shape = KountaShapeSmall, elevation = 4.dp),
+        modifier = modifier
+            .fillMaxHeight()
+            .claymorphic(shape = KountaShapeSmall, elevation = 4.dp),
     ) {
-        Text(
-            text = text,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-        )
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(
+                text = text,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
     }
 }
 
 private fun RowScope.cellModifier(fitsWithoutScroll: Boolean, minCellWidth: Dp): Modifier =
-    if (fitsWithoutScroll) Modifier.weight(1f) else Modifier.width(minCellWidth)
+    (if (fitsWithoutScroll) Modifier.weight(1f) else Modifier.width(minCellWidth)).fillMaxHeight()
 
 private fun formatCell(value: Int?): String = when (value) {
     null -> "-"

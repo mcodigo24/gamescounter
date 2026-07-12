@@ -53,6 +53,7 @@ import com.gamescounter.truco.ui.components.PlayerSetupScreen
 import com.gamescounter.truco.ui.components.SignedScoreField
 import com.gamescounter.truco.ui.components.formatSignedInput
 import com.gamescounter.truco.ui.components.KountaHint
+import com.gamescounter.truco.ui.components.kountaScreenInsets
 import com.gamescounter.truco.ui.theme.KountaBackground
 import com.gamescounter.truco.ui.theme.LostRed
 import com.gamescounter.truco.ui.theme.LostRedContainer
@@ -122,6 +123,7 @@ fun ChinChonScreen(
                 }
             },
         containerColor = KountaBackground,
+        contentWindowInsets = kountaScreenInsets(),
         topBar = {
             GameTopBar(
                 title = "Chin Chon",

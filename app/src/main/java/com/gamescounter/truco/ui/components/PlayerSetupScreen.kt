@@ -53,6 +53,7 @@ fun PlayerSetupScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = KountaBackground,
+        contentWindowInsets = kountaScreenInsets(),
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(text = gameTitle, fontWeight = FontWeight.SemiBold) },
