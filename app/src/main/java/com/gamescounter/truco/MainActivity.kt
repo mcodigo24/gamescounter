@@ -2,6 +2,7 @@ package com.gamescounter.truco
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -41,6 +42,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             var currentScreen by rememberSaveable { mutableStateOf("home") }
             KountaTheme {
+                BackHandler(enabled = currentScreen != "home") {
+                    currentScreen = "home"
+                }
                 when (currentScreen) {
                     "home" -> HomeScreen(
                         onSelectGame = { selected ->
