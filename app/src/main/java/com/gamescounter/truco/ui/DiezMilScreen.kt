@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +41,7 @@ import com.gamescounter.truco.diezmil.MIN_DIEZMIL_PLAYERS
 import com.gamescounter.truco.ui.components.GameTopBar
 import com.gamescounter.truco.ui.components.GridLabel
 import com.gamescounter.truco.ui.components.GridTotalCell
+import com.gamescounter.truco.ui.components.KountaShapeSmall
 import com.gamescounter.truco.ui.components.PlayerCountActions
 import com.gamescounter.truco.ui.components.PlayerSetupScreen
 import com.gamescounter.truco.ui.components.KountaHint
@@ -172,7 +172,7 @@ fun DiezMilScreen(
                             singleLine = true,
                             readOnly = placement != null,
                             modifier = cellModifier(fitsWithoutScroll, minCellWidth),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = KountaShapeSmall,
                             textStyle = MaterialTheme.typography.titleMedium.copy(
                                 textAlign = TextAlign.Center,
                                 color = if (active) WinGreen else MaterialTheme.colorScheme.onSurface,

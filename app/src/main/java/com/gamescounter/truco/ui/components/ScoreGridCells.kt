@@ -41,9 +41,9 @@ fun GridLabel(
     Surface(
         shape = KountaShapeSmall,
         color = containerColor,
-        shadowElevation = 1.dp,
+        shadowElevation = 0.dp,
         border = BorderStroke(1.dp, KountaBorder),
-        modifier = modifier,
+        modifier = modifier.claymorphic(shape = KountaShapeSmall, elevation = 4.dp),
     ) {
         Text(
             text = text,
@@ -68,9 +68,9 @@ fun GridTotalCell(
     Surface(
         shape = KountaShapeSmall,
         color = containerColor,
-        shadowElevation = 2.dp,
+        shadowElevation = 0.dp,
         border = BorderStroke(1.dp, KountaBorder),
-        modifier = modifier,
+        modifier = modifier.claymorphic(shape = KountaShapeSmall, elevation = 6.dp),
     ) {
         Text(
             text = value,
