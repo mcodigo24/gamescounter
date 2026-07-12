@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -110,6 +112,7 @@ fun ChinChonScreen(
     val labelWidth = 56.dp
     val minCellWidth = 104.dp
     val spacing = 8.dp
+    val rowHeight = 52.dp
 
     val focusManager = LocalFocusManager.current
 
@@ -165,10 +168,10 @@ fun ChinChonScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Row(
-                    modifier = if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier,
+                    modifier = (if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier).height(rowHeight),
                     horizontalArrangement = Arrangement.spacedBy(spacing),
                 ) {
-                    GridLabel(text = "Ronda", modifier = Modifier.width(labelWidth))
+                    GridLabel(text = "Ronda", modifier = Modifier.width(labelWidth).fillMaxHeight())
                     score.playerInitials.forEachIndexed { index, initial ->
                         val lost = score.isPlayerLost(index)
                         PlayerInitialField(
@@ -186,10 +189,10 @@ fun ChinChonScreen(
 
                 score.rounds.forEachIndexed { roundIndex, row ->
                     Row(
-                        modifier = if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier,
+                        modifier = (if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier).height(rowHeight),
                         horizontalArrangement = Arrangement.spacedBy(spacing),
                     ) {
-                        GridLabel(text = (roundIndex + 1).toString(), modifier = Modifier.width(labelWidth))
+                        GridLabel(text = (roundIndex + 1).toString(), modifier = Modifier.width(labelWidth).fillMaxHeight())
                         score.playerInitials.indices.forEach { playerIndex ->
                             val lost = score.isPlayerLost(playerIndex)
                             val colors = if (lost) {
@@ -209,10 +212,10 @@ fun ChinChonScreen(
                 }
 
                 Row(
-                    modifier = if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier,
+                    modifier = (if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier).height(rowHeight),
                     horizontalArrangement = Arrangement.spacedBy(spacing),
                 ) {
-                    GridLabel(text = "Total", modifier = Modifier.width(labelWidth))
+                    GridLabel(text = "Total", modifier = Modifier.width(labelWidth).fillMaxHeight())
                     score.playerInitials.indices.forEach { playerIndex ->
                         val lost = score.isPlayerLost(playerIndex)
                         val total = score.totalForPlayer(playerIndex)
@@ -237,4 +240,4 @@ fun ChinChonScreen(
 }
 
 private fun RowScope.cellModifier(fitsWithoutScroll: Boolean, minCellWidth: Dp): Modifier =
-    if (fitsWithoutScroll) Modifier.weight(1f) else Modifier.width(minCellWidth)
+    (if (fitsWithoutScroll) Modifier.weight(1f) else Modifier.width(minCellWidth)).fillMaxHeight()

@@ -3,6 +3,8 @@ package com.gamescounter.truco.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,8 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import com.gamescounter.truco.ui.theme.KountaBorder
 import com.gamescounter.truco.ui.theme.KountaBorderFocus
 import com.gamescounter.truco.ui.theme.KountaPrimary
-import com.gamescounter.truco.ui.theme.KountaSecondary
 import com.gamescounter.truco.ui.theme.KountaSurface
 
 @Composable
@@ -52,16 +51,20 @@ fun GridLabel(
         border = BorderStroke(1.dp, KountaBorder),
         modifier = modifier.claymorphic(shape = KountaShapeSmall, elevation = 4.dp),
     ) {
-        Text(
-            text = text,
-            textAlign = TextAlign.Center,
-            color = contentColor,
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(vertical = 12.dp),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-        )
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = text,
+                textAlign = TextAlign.Center,
+                color = contentColor,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
     }
 }
 
@@ -79,16 +82,20 @@ fun GridTotalCell(
         border = BorderStroke(1.dp, KountaBorder),
         modifier = modifier.claymorphic(shape = KountaShapeSmall, elevation = 6.dp),
     ) {
-        Text(
-            text = value,
-            textAlign = TextAlign.Center,
-            color = contentColor,
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(vertical = 12.dp),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-        )
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = value,
+                textAlign = TextAlign.Center,
+                color = contentColor,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+            )
+        }
     }
 }
 
@@ -177,31 +184,30 @@ fun SignedScoreField(
         onValueChange(combined)
     }
 
-    OutlinedTextField(
-        // Only the digits are shown; the sign is conveyed by the leading +/- toggle,
-        // so a negative value doesn't render as a confusing "- -10".
-        value = digits,
-        onValueChange = { input ->
-            if (input.isEmpty() || input.all { it.isDigit() }) {
-                commit(input, isNegative)
-            }
-        },
-        singleLine = true,
-        isError = isError,
-        modifier = modifier.onFocusChanged { isFocused = it.isFocused },
+    // Built on BasicTextField (instead of OutlinedTextField) so this cell matches the
+    // exact height/shape of the other grid cells (GridLabel, PlayerInitialField, etc.)
+    // instead of Material3's taller default text-field min height.
+    val borderColor = when {
+        isError -> MaterialTheme.colorScheme.error
+        isFocused -> KountaBorderFocus
+        else -> KountaBorder
+    }
+    Surface(
         shape = KountaShapeSmall,
-        textStyle = MaterialTheme.typography.titleMedium.copy(
-            textAlign = TextAlign.Center,
-            color = contentColor,
-        ),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-        ),
-        leadingIcon = {
+        color = containerColor,
+        border = BorderStroke(1.dp, borderColor),
+        modifier = modifier.claymorphic(shape = KountaShapeSmall, elevation = 5.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             TextButton(
                 onClick = { commit(digits, !isNegative) },
                 contentPadding = PaddingValues(0.dp),
-                modifier = Modifier.width(28.dp),
+                modifier = Modifier
+                    .width(28.dp)
+                    .fillMaxHeight(),
             ) {
                 Text(
                     text = if (isNegative) "-" else "+",
@@ -209,9 +215,34 @@ fun SignedScoreField(
                     color = contentColor,
                 )
             }
-        },
-        colors = kountaFieldColors(containerColor, contentColor),
-    )
+            BasicTextField(
+                value = digits,
+                onValueChange = { input ->
+                    if (input.isEmpty() || input.all { it.isDigit() }) {
+                        commit(input, isNegative)
+                    }
+                },
+                singleLine = true,
+                textStyle = MaterialTheme.typography.titleMedium.copy(
+                    textAlign = TextAlign.Center,
+                    color = contentColor,
+                ),
+                cursorBrush = SolidColor(KountaPrimary),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .onFocusChanged { isFocused = it.isFocused },
+                decorationBox = { innerTextField ->
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        innerTextField()
+                    }
+                },
+            )
+        }
+    }
 }
 
 @Composable
@@ -224,48 +255,52 @@ fun UnsignedScoreField(
     isError: Boolean = false,
     onFocusLost: (() -> Unit)? = null,
 ) {
+    var isFocused by remember { mutableStateOf(false) }
     var wasFocused by remember { mutableStateOf(false) }
-    OutlinedTextField(
-        value = value,
-        onValueChange = { input ->
-            if (input.isEmpty() || input.all { it.isDigit() }) {
-                onValueChange(input)
-            }
-        },
-        singleLine = true,
-        isError = isError,
-        modifier = modifier.onFocusChanged { focusState ->
-            if (wasFocused && !focusState.isFocused) {
-                onFocusLost?.invoke()
-            }
-            wasFocused = focusState.isFocused
-        },
+    val borderColor = when {
+        isError -> MaterialTheme.colorScheme.error
+        isFocused -> KountaBorderFocus
+        else -> KountaBorder
+    }
+    Surface(
         shape = KountaShapeSmall,
-        textStyle = MaterialTheme.typography.titleMedium.copy(
-            textAlign = TextAlign.Center,
-            color = contentColor,
-        ),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-        ),
-        colors = kountaFieldColors(containerColor, contentColor),
-    )
+        color = containerColor,
+        border = BorderStroke(1.dp, borderColor),
+        modifier = modifier.claymorphic(shape = KountaShapeSmall, elevation = 5.dp),
+    ) {
+        BasicTextField(
+            value = value,
+            onValueChange = { input ->
+                if (input.isEmpty() || input.all { it.isDigit() }) {
+                    onValueChange(input)
+                }
+            },
+            singleLine = true,
+            textStyle = MaterialTheme.typography.titleMedium.copy(
+                textAlign = TextAlign.Center,
+                color = contentColor,
+            ),
+            cursorBrush = SolidColor(KountaPrimary),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+            ),
+            modifier = Modifier
+                .fillMaxSize()
+                .onFocusChanged { focusState ->
+                    if (wasFocused && !focusState.isFocused) {
+                        onFocusLost?.invoke()
+                    }
+                    wasFocused = focusState.isFocused
+                    isFocused = focusState.isFocused
+                },
+            decorationBox = { innerTextField ->
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    innerTextField()
+                }
+            },
+        )
+    }
 }
-
-@Composable
-private fun kountaFieldColors(
-    containerColor: Color,
-    contentColor: Color,
-) = OutlinedTextFieldDefaults.colors(
-    focusedContainerColor = containerColor,
-    unfocusedContainerColor = containerColor,
-    disabledContainerColor = containerColor.copy(alpha = 0.6f),
-    focusedTextColor = contentColor,
-    unfocusedTextColor = contentColor,
-    focusedBorderColor = KountaSecondary,
-    unfocusedBorderColor = KountaBorder,
-    cursorColor = KountaPrimary,
-)
 
 fun formatSignedInput(value: Int?): String = when (value) {
     null -> ""
