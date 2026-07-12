@@ -31,12 +31,10 @@ import com.gamescounter.truco.ui.theme.KountaPrimary
 import com.gamescounter.truco.ui.theme.KountaSecondary
 import com.gamescounter.truco.ui.theme.KountaSurface
 
-private val signedInputPattern = Regex("^-?\\d*$")
-
 @Composable
 fun GridLabel(
     text: String,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.width(72.dp),
     containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
@@ -45,7 +43,7 @@ fun GridLabel(
         color = containerColor,
         shadowElevation = 1.dp,
         border = BorderStroke(1.dp, KountaBorder),
-        modifier = modifier.width(72.dp),
+        modifier = modifier,
     ) {
         Text(
             text = text,
@@ -63,7 +61,7 @@ fun GridLabel(
 @Composable
 fun GridTotalCell(
     value: String,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.width(72.dp),
     containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
@@ -72,7 +70,7 @@ fun GridTotalCell(
         color = containerColor,
         shadowElevation = 2.dp,
         border = BorderStroke(1.dp, KountaBorder),
-        modifier = modifier.width(72.dp),
+        modifier = modifier,
     ) {
         Text(
             text = value,
@@ -91,7 +89,7 @@ fun GridTotalCell(
 fun SignedScoreField(
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.width(88.dp),
     containerColor: Color = KountaSurface,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     isError: Boolean = false,
@@ -104,20 +102,26 @@ fun SignedScoreField(
         if (!isFocused) text = value
     }
     val isNegative = text.startsWith("-")
+    val digits = text.removePrefix("-")
+
+    fun commit(newDigits: String, negative: Boolean) {
+        val combined = if (negative) "-$newDigits" else newDigits
+        text = combined
+        onValueChange(combined)
+    }
 
     OutlinedTextField(
-        value = text,
+        // Only the digits are shown; the sign is conveyed by the leading +/- toggle,
+        // so a negative value doesn't render as a confusing "- -10".
+        value = digits,
         onValueChange = { input ->
-            if (input.isEmpty() || input.matches(signedInputPattern)) {
-                text = input
-                onValueChange(input)
+            if (input.isEmpty() || input.all { it.isDigit() }) {
+                commit(input, isNegative)
             }
         },
         singleLine = true,
         isError = isError,
-        modifier = modifier
-            .width(88.dp)
-            .onFocusChanged { isFocused = it.isFocused },
+        modifier = modifier.onFocusChanged { isFocused = it.isFocused },
         shape = KountaShapeSmall,
         textStyle = MaterialTheme.typography.titleMedium.copy(
             textAlign = TextAlign.Center,
@@ -128,15 +132,7 @@ fun SignedScoreField(
         ),
         leadingIcon = {
             TextButton(
-                onClick = {
-                    val toggled = when {
-                        text.isEmpty() -> "-"
-                        isNegative -> text.removePrefix("-")
-                        else -> "-$text"
-                    }
-                    text = toggled
-                    onValueChange(toggled)
-                },
+                onClick = { commit(digits, !isNegative) },
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier.width(28.dp),
             ) {
@@ -155,7 +151,7 @@ fun SignedScoreField(
 fun UnsignedScoreField(
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.width(72.dp),
     containerColor: Color = KountaSurface,
     contentColor: Color = MaterialTheme.colorScheme.onSurface,
     isError: Boolean = false,
@@ -169,7 +165,7 @@ fun UnsignedScoreField(
         },
         singleLine = true,
         isError = isError,
-        modifier = modifier.width(72.dp),
+        modifier = modifier,
         shape = KountaShapeSmall,
         textStyle = MaterialTheme.typography.titleMedium.copy(
             textAlign = TextAlign.Center,
