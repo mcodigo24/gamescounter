@@ -99,7 +99,7 @@ fun ChinChonScreen(
     val vertical = rememberScrollState()
 
     val labelWidth = 56.dp
-    val minCellWidth = 76.dp
+    val minCellWidth = 104.dp
     val spacing = 8.dp
 
     Scaffold(
@@ -124,6 +124,7 @@ fun ChinChonScreen(
             val requiredWidth = labelWidth + spacing +
                 minCellWidth * playerCount + spacing * (playerCount - 1).coerceAtLeast(0)
             val fitsWithoutScroll = requiredWidth <= maxWidth
+            val availableWidth = maxWidth
 
             Column(
                 modifier = Modifier
@@ -199,6 +200,7 @@ fun ChinChonScreen(
                     text = "Al llegar a $CHINCHON_LOSE_THRESHOLD o mas, la columna se marca en rojo. " +
                         "El proximo valor ingresado reinicia el conteo desde ese numero. " +
                         "Toca el +/- junto al numero para ingresar valores negativos.",
+                    modifier = Modifier.width(availableWidth),
                 )
             }
         }
