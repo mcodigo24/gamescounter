@@ -70,7 +70,7 @@ fun DiezMilScreen(
 
     if (uiState.showSetup) {
         PlayerSetupScreen(
-            gameTitle = "10Mil",
+            gameTitle = "10 mil",
             minPlayers = MIN_DIEZMIL_PLAYERS,
             maxPlayers = MAX_DIEZMIL_PLAYERS,
             defaultPlayers = DEFAULT_DIEZMIL_PLAYERS,
@@ -86,7 +86,7 @@ fun DiezMilScreen(
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
             title = { Text("¿Empezar una nueva partida?") },
-            text = { Text("Se borraran todos los puntajes de 10Mil.") },
+            text = { Text("Se borraran todos los puntajes de 10 mil.") },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -127,7 +127,7 @@ fun DiezMilScreen(
         contentWindowInsets = kountaScreenInsets(),
         topBar = {
             GameTopBar(
-                title = "10Mil",
+                title = "10 mil",
                 saveStatus = uiState.saveStatus,
                 onBack = onBack,
                 onReset = { showResetDialog = true },

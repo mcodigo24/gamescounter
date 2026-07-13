@@ -17,9 +17,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.gamescounter.truco.chinchon.ChinChonViewModel
+import com.gamescounter.truco.comodin.ComodinViewModel
 import com.gamescounter.truco.diezmil.DiezMilViewModel
 import com.gamescounter.truco.generala.GeneralaViewModel
 import com.gamescounter.truco.ui.ChinChonScreen
+import com.gamescounter.truco.ui.ComodinScreen
 import com.gamescounter.truco.ui.DiezMilScreen
 import com.gamescounter.truco.ui.GameEntry
 import com.gamescounter.truco.ui.GeneralaScreen
@@ -36,6 +38,7 @@ class MainActivity : ComponentActivity() {
     private val generalaViewModel: GeneralaViewModel by viewModels()
     private val chinChonViewModel: ChinChonViewModel by viewModels()
     private val diezMilViewModel: DiezMilViewModel by viewModels()
+    private val comodinViewModel: ComodinViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +97,12 @@ class MainActivity : ComponentActivity() {
                             onBack = { currentScreen = "home" },
                             modifier = Modifier.fillMaxSize().padding(padding),
                         )
+
+                        GameEntry.Comodin.name -> ComodinScreen(
+                            viewModel = comodinViewModel,
+                            onBack = { currentScreen = "home" },
+                            modifier = Modifier.fillMaxSize().padding(padding),
+                        )
                     }
                 }
             }
@@ -106,5 +115,6 @@ class MainActivity : ComponentActivity() {
         generalaViewModel.flushSave()
         chinChonViewModel.flushSave()
         diezMilViewModel.flushSave()
+        comodinViewModel.flushSave()
     }
 }
