@@ -3,7 +3,7 @@ package com.gamescounter.truco.data
 const val MIN_SCORE = 0
 const val MAX_SCORE = 30
 const val AUTO_SAVE_DELAY_MS = 30_000L
-const val SAVE_RETENTION_DAYS = 5L
+const val SAVE_RETENTION_DAYS = 1L
 
 data class TrucoScore(
     val nosotros: Int = 0,

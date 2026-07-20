@@ -55,6 +55,7 @@ import com.gamescounter.truco.R
 import com.gamescounter.truco.SaveStatus
 import com.gamescounter.truco.generala.GeneralaRow
 import com.gamescounter.truco.generala.GeneralaViewModel
+import com.gamescounter.truco.ui.components.KeepScreenAwake
 import com.gamescounter.truco.ui.components.KountaShapeSmall
 import com.gamescounter.truco.ui.components.PlayerInitialField
 import com.gamescounter.truco.ui.components.claymorphic
@@ -74,6 +75,7 @@ fun GeneralaScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    KeepScreenAwake(resetKey = uiState.score)
     var showResetDialog by remember { mutableStateOf(false) }
 
     if (showResetDialog) {

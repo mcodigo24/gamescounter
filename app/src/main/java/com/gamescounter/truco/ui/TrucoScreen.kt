@@ -55,6 +55,7 @@ import com.gamescounter.truco.SaveStatus
 import com.gamescounter.truco.TrucoViewModel
 import com.gamescounter.truco.data.MAX_SCORE
 import com.gamescounter.truco.data.MIN_SCORE
+import com.gamescounter.truco.ui.components.KeepScreenAwake
 import com.gamescounter.truco.ui.components.kountaScreenInsets
 import com.gamescounter.truco.ui.theme.KountaBackground
 import com.gamescounter.truco.ui.theme.KountaBorder
@@ -69,6 +70,7 @@ fun TrucoScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    KeepScreenAwake(resetKey = uiState.score)
     var showResetDialog by remember { mutableStateOf(false) }
 
     if (showResetDialog) {
