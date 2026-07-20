@@ -1,14 +1,17 @@
 package com.gamescounter.truco.ui.components
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.gamescounter.truco.ui.GameEntry
 import com.gamescounter.truco.ui.theme.KountaBackground
@@ -32,20 +35,30 @@ fun KountaBottomNavBar(
         NavigationBarItem(
             selected = currentScreen == HOME_ROUTE,
             onClick = { onSelect(HOME_ROUTE) },
-            icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Inicio") },
-            label = { Text("Inicio") },
+            icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Inicio", modifier = Modifier.size(20.dp)) },
+            label = { NavLabel("Inicio") },
             colors = kountaNavItemColors(),
         )
         GameEntry.entries.forEach { game ->
             NavigationBarItem(
                 selected = currentScreen == game.name,
                 onClick = { onSelect(game.name) },
-                icon = { Icon(imageVector = game.icon, contentDescription = game.title) },
-                label = { Text(game.title) },
+                icon = { Icon(imageVector = game.icon, contentDescription = game.title, modifier = Modifier.size(20.dp)) },
+                label = { NavLabel(game.title) },
                 colors = kountaNavItemColors(),
             )
         }
     }
+}
+
+@Composable
+private fun NavLabel(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
 }
 
 @Composable
