@@ -62,6 +62,7 @@ import com.gamescounter.truco.ui.components.kountaScreenInsets
 import com.gamescounter.truco.ui.theme.KountaBackground
 import com.gamescounter.truco.ui.theme.KountaBorder
 import com.gamescounter.truco.ui.theme.KountaSurface
+import com.gamescounter.truco.ui.theme.KountaSurfaceEmpty
 import com.gamescounter.truco.ui.theme.KountaSurfaceVariant
 import com.gamescounter.truco.generala.MAX_GENERALA_PLAYERS
 import com.gamescounter.truco.generala.MIN_GENERALA_PLAYERS
@@ -286,10 +287,11 @@ private fun ScoreRow(
         ) {
             CellLabel(text = label, modifier = Modifier.width(labelWidth))
             values.forEachIndexed { playerIndex, value ->
+                val isEmpty = value == null
                 Surface(
                     onClick = { onCellTap(playerIndex) },
                     shape = KountaShapeSmall,
-                    color = KountaSurface,
+                    color = if (isEmpty) KountaSurfaceEmpty else KountaSurface,
                     border = BorderStroke(1.dp, KountaBorder),
                     modifier = cellModifier(fitsWithoutScroll, minCellWidth)
                         .claymorphic(shape = KountaShapeSmall, elevation = 5.dp),
@@ -298,9 +300,13 @@ private fun ScoreRow(
                         Text(
                             text = formatCell(value),
                             textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = if (isEmpty) {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
+                            fontWeight = if (isEmpty) FontWeight.Normal else FontWeight.SemiBold,
                         )
                     }
                 }
