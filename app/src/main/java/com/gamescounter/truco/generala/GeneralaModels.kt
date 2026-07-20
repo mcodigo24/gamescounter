@@ -18,8 +18,8 @@ enum class GeneralaRow(val label: String, val allowedValues: List<Int>) {
 }
 
 data class GeneralaScore(
-    val playerInitials: List<String> = listOf("A", "B", "C", "D"),
-    val board: List<List<Int?>> = List(4) { List(GeneralaRow.entries.size) { null } },
+    val playerInitials: List<String> = listOf("A", "B"),
+    val board: List<List<Int?>> = List(2) { List(GeneralaRow.entries.size) { null } },
     val lastUpdatedEpochMs: Long = 0L,
 ) {
     fun withPlayerCount(newCount: Int): GeneralaScore {

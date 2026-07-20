@@ -14,6 +14,7 @@ val KountaTextMuted = Color(0xFFB8A493)
 val KountaSurface = Color(0xFF45382E)
 val KountaNavBackground = Color(0xFF2E241D)
 val KountaSurfaceVariant = Color(0xFF4E3E32)
+val KountaSurfaceEmpty = Color(0xFF6E5847)
 val KountaBorder = Color(0x33F0B27A)
 val KountaBorderFocus = Color(0x99F0B27A)
 

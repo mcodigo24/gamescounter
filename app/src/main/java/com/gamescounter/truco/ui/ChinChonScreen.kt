@@ -50,6 +50,7 @@ import com.gamescounter.truco.chinchon.MIN_CHINCHON_PLAYERS
 import com.gamescounter.truco.ui.components.GameTopBar
 import com.gamescounter.truco.ui.components.GridLabel
 import com.gamescounter.truco.ui.components.GridTotalCell
+import com.gamescounter.truco.ui.components.KeepScreenAwake
 import com.gamescounter.truco.ui.components.PlayerInitialField
 import com.gamescounter.truco.ui.components.PlayerSetupScreen
 import com.gamescounter.truco.ui.components.SignedScoreField
@@ -67,6 +68,7 @@ fun ChinChonScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    KeepScreenAwake(resetKey = uiState.score)
 
     if (uiState.isLoading) return
 

@@ -62,6 +62,7 @@ import com.gamescounter.truco.comodin.MIN_COMODIN_PLAYERS
 import com.gamescounter.truco.ui.components.GameTopBar
 import com.gamescounter.truco.ui.components.GridLabel
 import com.gamescounter.truco.ui.components.GridTotalCell
+import com.gamescounter.truco.ui.components.KeepScreenAwake
 import com.gamescounter.truco.ui.components.KountaHint
 import com.gamescounter.truco.ui.components.KountaPrimaryButton
 import com.gamescounter.truco.ui.components.KountaSection
@@ -82,6 +83,7 @@ fun ComodinScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    KeepScreenAwake(resetKey = uiState.score)
 
     if (uiState.isLoading) return
 

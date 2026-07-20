@@ -33,7 +33,7 @@ Corresponding screen composables live in `ui/<Game>Screen.kt`, with shared UI pi
 
 - One DataStore Preferences instance per game (`"<game>_scores"`), created via `preferencesDataStore` extension property on `Context`.
 - Every saved record stores a `last_updated` epoch-ms timestamp.
-- On `load()`, if `now - last_updated > SAVE_RETENTION_DAYS` (5 days, `data/TrucoScore.kt`), the repository clears itself and returns `null` — this is the app's expiry mechanism, re-implemented per repository rather than shared.
+- On `load()`, if `now - last_updated > SAVE_RETENTION_DAYS` (1 day, `data/TrucoScore.kt`), the repository clears itself and returns `null` — this is the app's expiry mechanism, re-implemented per repository rather than shared.
 - Complex state (Generala's per-player grid) is serialized into single string preferences using custom delimiters (`,` for initials, `|` for rows, `;` for cells, `_` for null) rather than JSON — follow this convention if extending a grid-based game.
 
 ### ViewModel state flow
