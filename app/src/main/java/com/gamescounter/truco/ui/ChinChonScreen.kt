@@ -132,7 +132,6 @@ fun ChinChonScreen(
         topBar = {
             GameTopBar(
                 title = "Chin Chon",
-                saveStatus = uiState.saveStatus,
                 onBack = onBack,
                 onReset = { showResetDialog = true },
                 actions = {

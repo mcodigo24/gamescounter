@@ -3,14 +3,18 @@
 package com.gamescounter.truco.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -19,6 +23,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,8 +60,13 @@ fun PlayerSetupScreen(
         containerColor = KountaBackground,
         contentWindowInsets = kountaScreenInsets(),
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(text = gameTitle, fontWeight = FontWeight.SemiBold) },
+            TopAppBar(
+                modifier = if (isLandscape()) Modifier.height(compactTopBarHeight()) else Modifier,
+                title = {
+                    Box(modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterStart) {
+                        Text(text = gameTitle, fontWeight = FontWeight.SemiBold)
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -65,7 +75,7 @@ fun PlayerSetupScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = KountaBackground,
                 ),
             )
@@ -75,6 +85,7 @@ fun PlayerSetupScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 28.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(28.dp, Alignment.CenterVertically),

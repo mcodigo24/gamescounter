@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.gamescounter.truco.data.SAVE_RETENTION_DAYS
+import com.gamescounter.truco.data.normalizePlayerName
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.util.concurrent.TimeUnit
@@ -36,7 +37,7 @@ class GeneralaRepository(private val context: Context) {
         }
 
         val initials = initialsRaw.split(",")
-            .map { it.trim().ifBlank { "?" }.take(1).uppercase() }
+            .map { normalizePlayerName(it).ifBlank { "?" } }
             .take(MAX_GENERALA_PLAYERS)
             .ifEmpty { listOf("A", "B", "C", "D") }
 

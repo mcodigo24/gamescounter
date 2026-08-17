@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.gamescounter.truco.data.normalizePlayerName
 import com.gamescounter.truco.ui.theme.KountaBorder
 import com.gamescounter.truco.ui.theme.KountaBorderFocus
 import com.gamescounter.truco.ui.theme.KountaPrimary
@@ -129,11 +130,20 @@ fun PlayerInitialField(
         border = BorderStroke(1.dp, if (isFocused) KountaBorderFocus else KountaBorder),
         modifier = modifier.claymorphic(shape = KountaShapeSmall, elevation = 5.dp),
     ) {
+        val shownText = if (readOnly) value else text
+        // Shrink the font as the name grows (up to 3 chars) so it still fits the
+        // narrowest grid cell (e.g. Generala's 60.dp columns) without wrapping.
+        val scale = when {
+            shownText.length <= 1 -> 1f
+            shownText.length == 2 -> 0.85f
+            else -> 0.7f
+        }
         BasicTextField(
-            value = if (readOnly) value else text,
+            value = shownText,
             onValueChange = { input ->
-                text = input
-                onValueChange(input)
+                val clean = if (readOnly) input else normalizePlayerName(input)
+                text = clean
+                onValueChange(clean)
             },
             singleLine = true,
             readOnly = readOnly,
@@ -141,6 +151,7 @@ fun PlayerInitialField(
             // highlighting); only fall back to contentColor when none was set.
             textStyle = textStyle.copy(
                 color = if (textStyle.color.isSpecified) textStyle.color else contentColor,
+                fontSize = textStyle.fontSize * scale,
             ),
             cursorBrush = SolidColor(KountaPrimary),
             modifier = Modifier

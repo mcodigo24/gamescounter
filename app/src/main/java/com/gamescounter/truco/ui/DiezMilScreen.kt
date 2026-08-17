@@ -130,7 +130,6 @@ fun DiezMilScreen(
         topBar = {
             GameTopBar(
                 title = "10 mil",
-                saveStatus = uiState.saveStatus,
                 onBack = onBack,
                 onReset = { showResetDialog = true },
                 actions = {

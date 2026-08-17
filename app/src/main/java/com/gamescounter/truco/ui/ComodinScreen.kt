@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +28,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -67,6 +68,8 @@ import com.gamescounter.truco.ui.components.KountaHint
 import com.gamescounter.truco.ui.components.KountaPrimaryButton
 import com.gamescounter.truco.ui.components.KountaSection
 import com.gamescounter.truco.ui.components.PlayerInitialField
+import com.gamescounter.truco.ui.components.compactTopBarHeight
+import com.gamescounter.truco.ui.components.isLandscape
 import com.gamescounter.truco.ui.components.SignedScoreField
 import com.gamescounter.truco.ui.components.UnsignedScoreField
 import com.gamescounter.truco.ui.components.formatSignedInput
@@ -174,7 +177,6 @@ fun ComodinScreen(
         topBar = {
             GameTopBar(
                 title = score.title,
-                saveStatus = uiState.saveStatus,
                 onBack = onBack,
                 onReset = { showResetDialog = true },
                 actions = {
@@ -309,8 +311,13 @@ private fun ComodinSetupScreen(
         containerColor = KountaBackground,
         contentWindowInsets = kountaScreenInsets(),
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(text = "Comodín", fontWeight = FontWeight.SemiBold) },
+            TopAppBar(
+                modifier = if (isLandscape()) Modifier.height(compactTopBarHeight()) else Modifier,
+                title = {
+                    Box(modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterStart) {
+                        Text(text = "Comodín", fontWeight = FontWeight.SemiBold)
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -319,7 +326,7 @@ private fun ComodinSetupScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = KountaBackground,
                 ),
             )
