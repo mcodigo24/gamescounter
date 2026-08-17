@@ -26,6 +26,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
@@ -82,6 +84,7 @@ fun GeneralaScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     KeepScreenAwake(resetKey = uiState.score)
     var showResetDialog by remember { mutableStateOf(false) }
+    var showTotals by remember { mutableStateOf(false) }
 
     if (showResetDialog) {
         AlertDialog(
@@ -151,6 +154,12 @@ fun GeneralaScreen(
                     ) {
                         Text("+")
                     }
+                    IconButton(onClick = { showTotals = !showTotals }) {
+                        Icon(
+                            imageVector = if (showTotals) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            contentDescription = if (showTotals) "Ocultar totales" else "Mostrar totales",
+                        )
+                    }
                     IconButton(onClick = { showResetDialog = true }) {
                         Icon(imageVector = Icons.Default.Refresh, contentDescription = stringResource(R.string.reset_game))
                     }
@@ -180,8 +189,8 @@ fun GeneralaScreen(
                 minCellWidth * playerCount + spacing * (playerCount - 1).coerceAtLeast(0)
             val fitsWithoutScroll = requiredWidth <= maxWidth
 
-            // header row + one row per GeneralaRow entry + total row
-            val rowCount = GeneralaRow.entries.size + 2
+            // header row + one row per GeneralaRow entry + optional total row
+            val rowCount = GeneralaRow.entries.size + 1 + (if (showTotals) 1 else 0)
             val requiredHeight = minRowHeight * rowCount + spacing * (rowCount - 1)
             val fitsVertically = requiredHeight <= maxHeight
 
@@ -219,14 +228,16 @@ fun GeneralaScreen(
                     )
                 }
 
-                TotalRow(
-                    totals = uiState.score.board.indices.map { uiState.score.totalForPlayer(it) },
-                    fitsWithoutScroll = fitsWithoutScroll,
-                    labelWidth = labelWidth,
-                    minCellWidth = minCellWidth,
-                    spacing = spacing,
-                    modifier = rowModifier,
-                )
+                if (showTotals) {
+                    TotalRow(
+                        totals = uiState.score.board.indices.map { uiState.score.totalForPlayer(it) },
+                        fitsWithoutScroll = fitsWithoutScroll,
+                        labelWidth = labelWidth,
+                        minCellWidth = minCellWidth,
+                        spacing = spacing,
+                        modifier = rowModifier,
+                    )
+                }
 
                 if (uiState.score.playerInitials.size <= MIN_GENERALA_PLAYERS) {
                     Text(
