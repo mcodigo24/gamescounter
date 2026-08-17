@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Kounta — native Android app (Kotlin + Jetpack Compose) for scoring 4 card/dice games: **Truco**, **Generala**, **Chin Chon**, **10Mil**. Single-module app, no backend, no tests currently in repo.
+Kounta — native Android app (Kotlin + Jetpack Compose) for scoring 5 card/dice games: **Truco**, **Generala**, **Chin Chon**, **10Mil**, **Comodín** (generic scorer). Single-module app, no backend, no tests currently in repo.
 
 ## Commands
 
@@ -33,7 +33,7 @@ Corresponding screen composables live in `ui/<Game>Screen.kt`, with shared UI pi
 
 - One DataStore Preferences instance per game (`"<game>_scores"`), created via `preferencesDataStore` extension property on `Context`.
 - Every saved record stores a `last_updated` epoch-ms timestamp.
-- On `load()`, if `now - last_updated > SAVE_RETENTION_DAYS` (1 day, `data/TrucoScore.kt`), the repository clears itself and returns `null` — this is the app's expiry mechanism, re-implemented per repository rather than shared.
+- On `load()`, if `now - last_updated > SAVE_RETENTION_DAYS` (`data/TrucoScore.kt`, currently 1 day), the repository clears itself and returns `null` — this is the app's expiry mechanism, re-implemented per repository rather than shared.
 - Complex state (Generala's per-player grid) is serialized into single string preferences using custom delimiters (`,` for initials, `|` for rows, `;` for cells, `_` for null) rather than JSON — follow this convention if extending a grid-based game.
 
 ### ViewModel state flow
@@ -54,5 +54,6 @@ No navigation library — `MainActivity` holds a single `rememberSaveable { muta
 - **Generala**: up to `MAX_GENERALA_PLAYERS`, rows 1,2,3,4,5,6,E,F,P,G,2G, computed totals.
 - **Chin Chon**: per-round signed values, running total, visual flag at 100+.
 - **10Mil**: per-round values starting from 750, exact target 10000, visual flag on win.
+- **Comodín**: generic per-round scorer (up to `MAX_COMODIN_PLAYERS`), no target/win condition, optional negative values, for any game not covered above.
 
-When adding a 5th game, mirror this structure: `Models` + `Repository` + `ViewModel` in a new package, a `Screen.kt`, a `GameEntry` entry, a `by viewModels()` field + `flushSave()` wiring in `MainActivity`.
+When adding a new game, mirror this structure: `Models` + `Repository` + `ViewModel` in a new package, a `Screen.kt`, a `GameEntry` entry, a `by viewModels()` field + `flushSave()` wiring in `MainActivity`.
