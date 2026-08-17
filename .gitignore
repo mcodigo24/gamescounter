@@ -8,3 +8,15 @@
 .externalNativeBuild
 .cxx
 app/build
+
+# Firma / secretos
+*.jks
+*.keystore
+keystore.properties
+
+# Artefactos de release
+*.apk
+*.aab
+
+# Kotlin
+.kotlin/

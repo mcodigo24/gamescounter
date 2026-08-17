@@ -11,6 +11,7 @@ Truco · Generala · Chin Chon · 10Mil · Comodín
 ![Min SDK](https://img.shields.io/badge/minSdk-26-blue)
 ![Target SDK](https://img.shields.io/badge/targetSdk-35-blue)
 ![License](https://img.shields.io/badge/license-unspecified-lightgrey)
+[![Descargar APK](https://img.shields.io/github/v/release/mcodigo24/gamescounter?label=descargar%20APK&color=success)](https://github.com/mcodigo24/gamescounter/releases/latest)
 
 </div>
 
@@ -48,6 +49,18 @@ Sin backend. Sin cuentas. Sin anuncios. Solo abrís el juego, elegís tu partida
 - Sin librería de navegación: un `when` simple sobre un estado `rememberSaveable`
 - Arquitectura de **vertical slices**: cada juego es autocontenido en `Models` + `Repository` + `ViewModel` + `Screen`
 
+## 📥 Instalación
+
+¿Solo querés jugar? Descargá el APK, no hace falta compilar nada.
+
+1. Bajá la última versión desde **[Releases → última versión](https://github.com/mcodigo24/gamescounter/releases/latest)** (archivo `.apk`).
+2. Requisito: **Android 8.0 (API 26) o superior**.
+3. Al abrir el `.apk` descargado, Android va a avisar *"Por seguridad, tu teléfono no puede instalar apps desconocidas de esta fuente"* — es normal, porque la app no viene de Play Store. Tocá **Configuración**, activá **Permitir desde esta fuente** (el permiso se pide por app, ej. Chrome o Archivos) y volvé atrás para instalar.
+4. Play Protect puede mostrar un aviso de "app no reconocida" antes de instalar — elegí **Instalar de todas formas**. Es esperable en cualquier app distribuida fuera de la tienda.
+5. Kounta es 100% offline y **no pide ningún permiso** del sistema (podés revisarlo vos mismo: el `AndroidManifest.xml` no declara ni uno).
+
+> **Actualizar una versión anterior:** si ya tenías Kounta instalada desde Android Studio (build de debug), vas a tener que desinstalarla primero — Android no permite actualizar una app si la nueva versión está firmada con una clave distinta. Instalar sobre una versión anterior también firmada como release (a partir de esta v1.0.0) sí funciona sin desinstalar, y conserva los puntajes guardados.
+
 ## 🚀 Cómo correrlo
 
 ### Requisitos
@@ -74,7 +87,31 @@ Con `JAVA_HOME` y el Android SDK configurados:
 ./gradlew lint             # Android lint
 ```
 
-> En Windows, si no tenés `gradlew`, Android Studio genera el wrapper al sincronizar por primera vez.
+### Build de release (APK firmado)
+
+Para generar un APK release (firmado, con R8 activado) hace falta un keystore propio y un archivo
+`keystore.properties` en la raíz del proyecto (no se commitea, está en `.gitignore`):
+
+```properties
+storeFile=/ruta/a/tu-keystore.jks
+storePassword=...
+keyAlias=...
+keyPassword=...
+```
+
+Generar un keystore nuevo (una sola vez):
+
+```bash
+keytool -genkeypair -v -keystore tu-keystore.jks -alias kounta -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Y compilar:
+
+```bash
+./gradlew assembleRelease   # genera app/build/outputs/apk/release/kounta-v<version>.apk
+```
+
+Sin `keystore.properties`, `assembleRelease` compila igual pero el APK queda sin firmar.
 
 ## 📁 Estructura del proyecto
 
