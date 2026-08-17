@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gamescounter.truco.SaveStatus
 import com.gamescounter.truco.data.AUTO_SAVE_DELAY_MS
+import com.gamescounter.truco.data.normalizePlayerName
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,7 +54,7 @@ class ChinChonViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun updateInitial(playerIndex: Int, value: String) {
-        val clean = value.trim().uppercase().take(1)
+        val clean = normalizePlayerName(value)
         if (clean.isEmpty()) return
         updateScore { score ->
             val initials = score.playerInitials.toMutableList()
