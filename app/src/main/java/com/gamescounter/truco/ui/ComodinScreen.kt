@@ -27,6 +27,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -100,6 +102,7 @@ fun ComodinScreen(
     }
 
     var showResetDialog by remember { mutableStateOf(false) }
+    var showTotals by remember { mutableStateOf(false) }
     if (showResetDialog) {
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
@@ -197,6 +200,13 @@ fun ComodinScreen(
                             tint = MaterialTheme.colorScheme.onBackground,
                         )
                     }
+                    IconButton(onClick = { showTotals = !showTotals }) {
+                        Icon(
+                            imageVector = if (showTotals) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            contentDescription = if (showTotals) "Ocultar totales" else "Mostrar totales",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
                 },
             )
         },
@@ -262,19 +272,21 @@ fun ComodinScreen(
                     }
                 }
 
-                Row(
-                    modifier = (if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier).height(rowHeight),
-                    horizontalArrangement = Arrangement.spacedBy(spacing),
-                ) {
-                    GridLabel(text = "Total", modifier = Modifier.width(labelWidth).fillMaxHeight())
-                    score.playerInitials.indices.forEach { playerIndex ->
-                        val total = score.totalForPlayer(playerIndex)
-                        GridTotalCell(
-                            value = total.toString(),
-                            modifier = cellModifier(fitsWithoutScroll, minCellWidth),
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.onSurface,
-                        )
+                if (showTotals) {
+                    Row(
+                        modifier = (if (fitsWithoutScroll) Modifier.fillMaxWidth() else Modifier).height(rowHeight),
+                        horizontalArrangement = Arrangement.spacedBy(spacing),
+                    ) {
+                        GridLabel(text = "Total", modifier = Modifier.width(labelWidth).fillMaxHeight())
+                        score.playerInitials.indices.forEach { playerIndex ->
+                            val total = score.totalForPlayer(playerIndex)
+                            GridTotalCell(
+                                value = total.toString(),
+                                modifier = cellModifier(fitsWithoutScroll, minCellWidth),
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                contentColor = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
                     }
                 }
 
