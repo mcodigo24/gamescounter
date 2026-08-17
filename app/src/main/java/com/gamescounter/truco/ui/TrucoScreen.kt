@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -51,11 +52,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gamescounter.truco.R
-import com.gamescounter.truco.SaveStatus
 import com.gamescounter.truco.TrucoViewModel
 import com.gamescounter.truco.data.MAX_SCORE
 import com.gamescounter.truco.data.MIN_SCORE
 import com.gamescounter.truco.ui.components.KeepScreenAwake
+import com.gamescounter.truco.ui.components.compactTopBarHeight
+import com.gamescounter.truco.ui.components.isLandscape
 import com.gamescounter.truco.ui.components.kountaScreenInsets
 import com.gamescounter.truco.ui.theme.KountaBackground
 import com.gamescounter.truco.ui.theme.KountaBorder
@@ -102,7 +104,6 @@ fun TrucoScreen(
         contentWindowInsets = kountaScreenInsets(),
         topBar = {
             TopBar(
-                saveStatus = uiState.saveStatus,
                 onResetClick = { showResetDialog = true },
                 onBack = onBack,
             )
@@ -117,68 +118,86 @@ fun TrucoScreen(
             return@Scaffold
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-        ) {
-            TeamPanel(
-                teamName = stringResource(R.string.team_nosotros),
-                score = uiState.score.nosotros,
-                onIncrement = viewModel::incrementNosotros,
-                onDecrement = viewModel::decrementNosotros,
+        if (isLandscape()) {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-            )
+                    .fillMaxSize()
+                    .padding(padding),
+            ) {
+                TeamPanel(
+                    teamName = stringResource(R.string.team_nosotros),
+                    score = uiState.score.nosotros,
+                    onIncrement = viewModel::incrementNosotros,
+                    onDecrement = viewModel::decrementNosotros,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                )
 
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp),
-                color = KountaBorder,
-            ) {}
+                Surface(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp),
+                    color = KountaBorder,
+                ) {}
 
-            TeamPanel(
-                teamName = stringResource(R.string.team_ellos),
-                score = uiState.score.ellos,
-                onIncrement = viewModel::incrementEllos,
-                onDecrement = viewModel::decrementEllos,
+                TeamPanel(
+                    teamName = stringResource(R.string.team_ellos),
+                    score = uiState.score.ellos,
+                    onIncrement = viewModel::incrementEllos,
+                    onDecrement = viewModel::decrementEllos,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                )
+            }
+        } else {
+            Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-            )
+                    .fillMaxSize()
+                    .padding(padding),
+            ) {
+                TeamPanel(
+                    teamName = stringResource(R.string.team_nosotros),
+                    score = uiState.score.nosotros,
+                    onIncrement = viewModel::incrementNosotros,
+                    onDecrement = viewModel::decrementNosotros,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                )
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp),
+                    color = KountaBorder,
+                ) {}
+
+                TeamPanel(
+                    teamName = stringResource(R.string.team_ellos),
+                    score = uiState.score.ellos,
+                    onIncrement = viewModel::incrementEllos,
+                    onDecrement = viewModel::decrementEllos,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun TopBar(
-    saveStatus: SaveStatus,
     onResetClick: () -> Unit,
     onBack: () -> Unit,
 ) {
     TopAppBar(
+        modifier = if (isLandscape()) Modifier.height(compactTopBarHeight()) else Modifier,
         title = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(R.string.truco_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                when (saveStatus) {
-                    SaveStatus.Pending -> Text(
-                        text = stringResource(R.string.save_pending),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    SaveStatus.Saved -> Text(
-                        text = stringResource(R.string.save_saved),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    SaveStatus.Idle -> Unit
-                }
+            Box(modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterStart) {
+                Text(text = stringResource(R.string.truco_title))
             }
         },
         navigationIcon = {

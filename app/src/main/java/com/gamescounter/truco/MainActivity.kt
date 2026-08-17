@@ -28,6 +28,7 @@ import com.gamescounter.truco.ui.GeneralaScreen
 import com.gamescounter.truco.ui.HomeScreen
 import com.gamescounter.truco.ui.TrucoScreen
 import com.gamescounter.truco.ui.components.KountaBottomNavBar
+import com.gamescounter.truco.ui.components.isLandscape
 import com.gamescounter.truco.ui.theme.GamesCounterTheme
 import com.gamescounter.truco.ui.theme.KountaBackground
 import com.gamescounter.truco.ui.theme.KountaTheme
@@ -60,10 +61,12 @@ class MainActivity : ComponentActivity() {
                     // KountaBottomNavBar itself) — zero here to avoid reserving them twice.
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     bottomBar = {
-                        KountaBottomNavBar(
-                            currentScreen = currentScreen,
-                            onSelect = { currentScreen = it },
-                        )
+                        if (!isLandscape()) {
+                            KountaBottomNavBar(
+                                currentScreen = currentScreen,
+                                onSelect = { currentScreen = it },
+                            )
+                        }
                     },
                 ) { padding ->
                     when (currentScreen) {

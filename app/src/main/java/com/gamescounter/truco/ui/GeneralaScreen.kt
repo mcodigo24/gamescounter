@@ -6,6 +6,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -52,11 +54,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.res.stringResource
 import com.gamescounter.truco.R
-import com.gamescounter.truco.SaveStatus
 import com.gamescounter.truco.generala.GeneralaRow
 import com.gamescounter.truco.generala.GeneralaViewModel
 import com.gamescounter.truco.ui.components.KeepScreenAwake
 import com.gamescounter.truco.ui.components.KountaShapeSmall
+import com.gamescounter.truco.ui.components.compactTopBarHeight
+import com.gamescounter.truco.ui.components.isLandscape
 import com.gamescounter.truco.ui.components.PlayerInitialField
 import com.gamescounter.truco.ui.components.claymorphic
 import com.gamescounter.truco.ui.components.kountaScreenInsets
@@ -114,26 +117,10 @@ fun GeneralaScreen(
         contentWindowInsets = kountaScreenInsets(),
         topBar = {
             TopAppBar(
+                modifier = if (isLandscape()) Modifier.height(compactTopBarHeight()) else Modifier,
                 title = {
-                    Column {
+                    Box(modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterStart) {
                         Text(text = "Generala")
-                        when (uiState.saveStatus) {
-                            SaveStatus.Pending -> {
-                                Text(
-                                    text = "Guardando en 30 s…",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                            SaveStatus.Saved -> {
-                                Text(
-                                    text = "Progreso guardado",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
-                            }
-                            SaveStatus.Idle -> Unit
-                        }
                     }
                 },
                 navigationIcon = {
@@ -173,9 +160,11 @@ fun GeneralaScreen(
         if (uiState.isLoading) return@Scaffold
 
         val horizontal = rememberScrollState()
+        val vertical = rememberScrollState()
 
         val labelWidth = 60.dp
         val minCellWidth = 60.dp
+        val minRowHeight = 44.dp
         val spacing = 6.dp
 
         BoxWithConstraints(
@@ -189,12 +178,19 @@ fun GeneralaScreen(
                 minCellWidth * playerCount + spacing * (playerCount - 1).coerceAtLeast(0)
             val fitsWithoutScroll = requiredWidth <= maxWidth
 
+            // header row + one row per GeneralaRow entry + total row
+            val rowCount = GeneralaRow.entries.size + 2
+            val requiredHeight = minRowHeight * rowCount + spacing * (rowCount - 1)
+            val fitsVertically = requiredHeight <= maxHeight
+
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .let { if (fitsVertically) it.fillMaxSize() else it.fillMaxWidth().verticalScroll(vertical) }
                     .let { if (fitsWithoutScroll) it else it.horizontalScroll(horizontal) },
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
+                val rowModifier = if (fitsVertically) Modifier.weight(1f) else Modifier.height(minRowHeight)
+
                 HeaderRow(
                     initials = uiState.score.playerInitials,
                     onInitialChange = viewModel::updateInitial,
@@ -202,7 +198,7 @@ fun GeneralaScreen(
                     labelWidth = labelWidth,
                     minCellWidth = minCellWidth,
                     spacing = spacing,
-                    modifier = Modifier.weight(1f),
+                    modifier = rowModifier,
                 )
 
                 GeneralaRow.entries.forEachIndexed { rowIndex, row ->
@@ -214,7 +210,7 @@ fun GeneralaScreen(
                         labelWidth = labelWidth,
                         minCellWidth = minCellWidth,
                         spacing = spacing,
-                        modifier = Modifier.weight(1f),
+                        modifier = rowModifier,
                     )
                 }
 
@@ -224,7 +220,7 @@ fun GeneralaScreen(
                     labelWidth = labelWidth,
                     minCellWidth = minCellWidth,
                     spacing = spacing,
-                    modifier = Modifier.weight(1f),
+                    modifier = rowModifier,
                 )
 
                 if (uiState.score.playerInitials.size <= MIN_GENERALA_PLAYERS) {
