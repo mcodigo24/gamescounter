@@ -68,6 +68,8 @@ import com.gamescounter.truco.ui.theme.KountaBorder
 import com.gamescounter.truco.ui.theme.KountaSurface
 import com.gamescounter.truco.ui.theme.KountaSurfaceEmpty
 import com.gamescounter.truco.ui.theme.KountaSurfaceVariant
+import com.gamescounter.truco.ui.theme.WinAccent
+import com.gamescounter.truco.ui.theme.WinAccentContainer
 import com.gamescounter.truco.generala.MAX_GENERALA_PLAYERS
 import com.gamescounter.truco.generala.MIN_GENERALA_PLAYERS
 
@@ -206,6 +208,9 @@ fun GeneralaScreen(
                         label = row.label,
                         values = uiState.score.board.map { it[rowIndex] },
                         onCellTap = { playerIndex -> viewModel.cycleCell(playerIndex, rowIndex) },
+                        highlightedPlayerIndex = uiState.lastEditedCell
+                            ?.takeIf { it.second == rowIndex }
+                            ?.first,
                         fitsWithoutScroll = fitsWithoutScroll,
                         labelWidth = labelWidth,
                         minCellWidth = minCellWidth,
@@ -268,6 +273,7 @@ private fun ScoreRow(
     label: String,
     values: List<Int?>,
     onCellTap: (Int) -> Unit,
+    highlightedPlayerIndex: Int?,
     fitsWithoutScroll: Boolean,
     labelWidth: Dp,
     minCellWidth: Dp,
@@ -286,11 +292,18 @@ private fun ScoreRow(
             CellLabel(text = label, modifier = Modifier.width(labelWidth))
             values.forEachIndexed { playerIndex, value ->
                 val isEmpty = value == null
+                // Highlights the most recently tapped cell (across all rows) so players
+                // can see who played last and what they scored.
+                val isLastEdited = playerIndex == highlightedPlayerIndex
                 Surface(
                     onClick = { onCellTap(playerIndex) },
                     shape = KountaShapeSmall,
-                    color = if (isEmpty) KountaSurfaceEmpty else KountaSurface,
-                    border = BorderStroke(1.dp, KountaBorder),
+                    color = when {
+                        isLastEdited -> WinAccentContainer
+                        isEmpty -> KountaSurfaceEmpty
+                        else -> KountaSurface
+                    },
+                    border = BorderStroke(if (isLastEdited) 2.dp else 1.dp, if (isLastEdited) WinAccent else KountaBorder),
                     modifier = cellModifier(fitsWithoutScroll, minCellWidth)
                         .claymorphic(shape = KountaShapeSmall, elevation = 5.dp),
                 ) {
@@ -298,13 +311,13 @@ private fun ScoreRow(
                         Text(
                             text = formatCell(value),
                             textAlign = TextAlign.Center,
-                            color = if (isEmpty) {
-                                MaterialTheme.colorScheme.onSurfaceVariant
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
+                            color = when {
+                                isLastEdited -> WinAccent
+                                isEmpty -> MaterialTheme.colorScheme.onSurfaceVariant
+                                else -> MaterialTheme.colorScheme.onSurface
                             },
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = if (isEmpty) FontWeight.Normal else FontWeight.SemiBold,
+                            fontWeight = if (isEmpty && !isLastEdited) FontWeight.Normal else FontWeight.SemiBold,
                         )
                     }
                 }

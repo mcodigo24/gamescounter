@@ -18,6 +18,7 @@ data class GeneralaUiState(
     val score: GeneralaScore = GeneralaScore(),
     val saveStatus: SaveStatus = SaveStatus.Idle,
     val isLoading: Boolean = true,
+    val lastEditedCell: Pair<Int, Int>? = null,
 )
 
 class GeneralaViewModel(application: Application) : AndroidViewModel(application) {
@@ -63,12 +64,11 @@ class GeneralaViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun cycleCell(playerIndex: Int, rowIndex: Int) {
+        if (playerIndex !in _uiState.value.score.board.indices || rowIndex !in GeneralaRow.entries.indices) {
+            return
+        }
         updateScore { score ->
             val board = score.board.toMutableList()
-            if (playerIndex !in board.indices || rowIndex !in GeneralaRow.entries.indices) {
-                return@updateScore score
-            }
-
             val playerRow = board[playerIndex].toMutableList()
             val rowRule = GeneralaRow.entries[rowIndex]
             val current = playerRow[rowIndex]
@@ -82,6 +82,7 @@ class GeneralaViewModel(application: Application) : AndroidViewModel(application
             board[playerIndex] = playerRow
             score.copy(board = board)
         }
+        _uiState.update { it.copy(lastEditedCell = playerIndex to rowIndex) }
     }
 
     fun resetGame() {
